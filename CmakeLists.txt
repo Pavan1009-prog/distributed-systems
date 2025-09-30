@@ -1,0 +1,41 @@
+cmake_minimum_required(VERSION 3.15)
+project(DistributedBackupSystem)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Find required packages
+find_package(OpenSSL REQUIRED)
+find_package(SQLite3 REQUIRED)
+find_package(Threads REQUIRED)
+
+# Add executable
+add_executable(backup_system
+    main.cpp
+)
+
+# Link libraries
+target_link_libraries(backup_system
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    SQLite::SQLite3
+    Threads::Threads
+)
+
+# Include directories
+target_include_directories(backup_system PRIVATE
+    ${OPENSSL_INCLUDE_DIR}
+    ${SQLite3_INCLUDE_DIRS}
+)
+
+# Compiler flags
+if(MSVC)
+    target_compile_options(backup_system PRIVATE /W4)
+else()
+    target_compile_options(backup_system PRIVATE -Wall -Wextra -pedantic)
+endif()
+
+# Create backup directories
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/backup/gdrive)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/backup/dropbox)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/backup/onedrive)
